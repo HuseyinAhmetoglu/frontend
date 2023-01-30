@@ -1,8 +1,14 @@
 import React from "react";
-import { signup } from "../api/apiCalls";
+import { signup, changeLanguage } from "../api/apiCalls";
 import Input from "../components/Input";
+import { withTranslation } from "react-i18next";
+import i18n from "../i18n";
 
 class UserSignupPage extends React.Component {
+  //setstate fonksiyonu react'a bir güncellemenin olduğunu haber veriyor.
+  // react ise bu güncelleme haberinden sonra render fonksiyonunu çağıyor
+  // ve sayfada anlık gücellemeler oluyor.
+
   state = {
     username: null,
     displayname: null,
@@ -13,9 +19,20 @@ class UserSignupPage extends React.Component {
   };
 
   onChange = (event) => {
+    const { t } = this.props;
     const { name, value } = event.target;
     const errors = { ...this.state.errors };
+
     errors[name] = undefined;
+    if (name === "password" || name === "passwordRepeat") {
+      if (name === "password" && value !== this.state.passwordRepeat) {
+        errors.passwordRepeat = t("Password mismatch");
+      } else if (name === "passwordRepeat" && value !== this.state.password) {
+        errors.passwordRepeat = t("Password mismatch");
+      } else {
+        errors.passwordRepeat = undefined;
+      }
+    }
     this.setState({
       [name]: value,
       errors,
@@ -41,6 +58,8 @@ class UserSignupPage extends React.Component {
     }
     this.setState({ pendingApiCall: false });
 
+    // bu yöntem promise biz bunun yerine async await kullandık
+
     // signup(body)
     //   .then((response) => {
     //     this.setState({ pendingApiCall: false });
@@ -50,38 +69,50 @@ class UserSignupPage extends React.Component {
     //   });
   };
 
+  onChangeLanguage = (language) => {
+    const { i18n } = this.props;
+    i18n.changeLanguage(language);
+    changeLanguage(language);
+  };
+
   render() {
     const { pendingApiCall, errors } = this.state;
-    const { username, displayname } = errors;
+    const { username, displayname, password, passwordRepeat } = errors;
+    const { t } = this.props;
 
     return (
       <div className="container">
         <form>
-          <h1 className="text-center">Sign Up</h1>
-          <Input name="username" label="Username" error={username} onChange={this.onChange} /> 
-          <Input name="displayname" label="Display Name" error={displayname} onChange={this.onChange} /> 
-
-          <div className="form-group">
-            <label className="form-label">Password</label>
-            <input
-              type="password"
-              name="password"
-              onChange={this.onChange}
-              className="form-control"
-            />
-          </div>
-          <div className="form-group">
-            <label className="form-label">Password Repeat</label>
-            <input
-              type="password"
-              name="passwordRepeat"
-              onChange={this.onChange}
-              className="form-control"
-            />
-          </div>
+          <h1 className="text-center">{t("Sign Up")}</h1>
+          <Input
+            name="username"
+            label={t("Username")}
+            error={username}
+            onChange={this.onChange}
+          />
+          <Input
+            name="displayname"
+            label={t("Display Name")}
+            error={displayname}
+            onChange={this.onChange}
+          />
+          <Input
+            name="password"
+            label={t("Password")}
+            error={password}
+            onChange={this.onChange}
+            type="password"
+          />
+          <Input
+            name="passwordRepeat"
+            label={t("Password Repeat")}
+            error={passwordRepeat}
+            onChange={this.onChange}
+            type="password"
+          />
           <div className="form-group mt-2">
             <button
-              disabled={pendingApiCall}
+              disabled={pendingApiCall || passwordRepeat != undefined}
               onClick={this.onClickSignUp}
               className="btn btn-primary"
             >
@@ -90,8 +121,22 @@ class UserSignupPage extends React.Component {
               ) : (
                 ""
               )}{" "}
-              Sign Up
+              {t("Sign Up")}
             </button>
+          </div>
+          <div>
+            <img
+              src="https://flagsapi.com/TR/flat/24.png"
+              alt="turkiye-flag"
+              onClick={() => this.onChangeLanguage("tr")}
+              style={{ cursor: "pointer" }}
+            ></img>
+            <img
+              src="https://flagsapi.com/US/flat/24.png"
+              alt="usa-flag"
+              onClick={() => this.onChangeLanguage("en")}
+              style={{ cursor: "pointer" }}
+            ></img>
           </div>
         </form>
       </div>
@@ -99,4 +144,6 @@ class UserSignupPage extends React.Component {
   }
 }
 
-export default UserSignupPage;
+const UserSignupPageWithTranslation = withTranslation()(UserSignupPage);
+
+export default UserSignupPageWithTranslation;
