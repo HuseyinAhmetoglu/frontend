@@ -5,7 +5,7 @@ const Input = (props) => {
   const className = error ? "form-control is-invalid" : "form-control";
   return (
     <div className="form-group">
-      <label className="form-label">{label}</label>
+      <label className="form-label mt-2">{label}</label>
       <input
         name={name}
         onChange={onChange}

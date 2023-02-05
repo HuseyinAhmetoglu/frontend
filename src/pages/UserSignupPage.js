@@ -1,8 +1,9 @@
 import React from "react";
-import { signup, changeLanguage } from "../api/apiCalls";
+import { signup } from "../api/apiCalls";
 import Input from "../components/Input";
 import { withTranslation } from "react-i18next";
 import i18n from "../i18n";
+import ButtonWithProgress from "../components/ButtonWithProgress";
 
 class UserSignupPage extends React.Component {
   //setstate fonksiyonu react'a bir güncellemenin olduğunu haber veriyor.
@@ -69,12 +70,6 @@ class UserSignupPage extends React.Component {
     //   });
   };
 
-  onChangeLanguage = (language) => {
-    const { i18n } = this.props;
-    i18n.changeLanguage(language);
-    changeLanguage(language);
-  };
-
   render() {
     const { pendingApiCall, errors } = this.state;
     const { username, displayname, password, passwordRepeat } = errors;
@@ -110,34 +105,12 @@ class UserSignupPage extends React.Component {
             onChange={this.onChange}
             type="password"
           />
-          <div className="form-group mt-2">
-            <button
-              disabled={pendingApiCall || passwordRepeat != undefined}
-              onClick={this.onClickSignUp}
-              className="btn btn-primary"
-            >
-              {pendingApiCall ? (
-                <span className="spinner-border spinner-border-sm"></span>
-              ) : (
-                ""
-              )}{" "}
-              {t("Sign Up")}
-            </button>
-          </div>
-          <div>
-            <img
-              src="https://flagsapi.com/TR/flat/24.png"
-              alt="turkiye-flag"
-              onClick={() => this.onChangeLanguage("tr")}
-              style={{ cursor: "pointer" }}
-            ></img>
-            <img
-              src="https://flagsapi.com/US/flat/24.png"
-              alt="usa-flag"
-              onClick={() => this.onChangeLanguage("en")}
-              style={{ cursor: "pointer" }}
-            ></img>
-          </div>
+          <ButtonWithProgress
+            disabled={pendingApiCall || passwordRepeat != undefined}
+            onClick={this.onClickSignUp}
+            text={t("Sign Up")}
+            pendingApiCall={pendingApiCall}
+          />
         </form>
       </div>
     );
