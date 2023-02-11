@@ -2,8 +2,8 @@ import React from "react";
 import { signup } from "../api/apiCalls";
 import Input from "../components/Input";
 import { withTranslation } from "react-i18next";
-import i18n from "../i18n";
 import ButtonWithProgress from "../components/ButtonWithProgress";
+import { withApiProgress } from "../shared/ApiProgress";
 
 class UserSignupPage extends React.Component {
   //setstate fonksiyonu react'a bir güncellemenin olduğunu haber veriyor.
@@ -15,7 +15,6 @@ class UserSignupPage extends React.Component {
     displayname: null,
     password: null,
     passwordRepeat: null,
-    pendingApiCall: false,
     errors: {},
   };
 
@@ -48,7 +47,6 @@ class UserSignupPage extends React.Component {
       displayname,
       password,
     };
-    this.setState({ pendingApiCall: true });
 
     try {
       const response = await signup(body);
@@ -57,7 +55,6 @@ class UserSignupPage extends React.Component {
         this.setState({ errors: error.response.data.validationErrors });
       }
     }
-    this.setState({ pendingApiCall: false });
 
     // bu yöntem promise biz bunun yerine async await kullandık
 
@@ -71,9 +68,9 @@ class UserSignupPage extends React.Component {
   };
 
   render() {
-    const { pendingApiCall, errors } = this.state;
+    const { errors } = this.state;
     const { username, displayname, password, passwordRepeat } = errors;
-    const { t } = this.props;
+    const { t, pendingApiCall } = this.props;
 
     return (
       <div className="container">
@@ -106,7 +103,7 @@ class UserSignupPage extends React.Component {
             type="password"
           />
           <ButtonWithProgress
-            disabled={pendingApiCall || passwordRepeat != undefined}
+            disabled={pendingApiCall || passwordRepeat !== undefined}
             onClick={this.onClickSignUp}
             text={t("Sign Up")}
             pendingApiCall={pendingApiCall}
@@ -117,6 +114,10 @@ class UserSignupPage extends React.Component {
   }
 }
 
-const UserSignupPageWithTranslation = withTranslation()(UserSignupPage);
 
+const UserSignupPageWithApiProgress = withApiProgress(
+  UserSignupPage,
+  "/api/1.0/users"
+);
+const UserSignupPageWithTranslation = withTranslation()(UserSignupPageWithApiProgress);
 export default UserSignupPageWithTranslation;

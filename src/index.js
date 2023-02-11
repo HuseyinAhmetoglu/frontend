@@ -1,20 +1,17 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import './bootstrap-override.scss'
-import App from './App';
-import UserSignupPage from './pages/UserSignupPage';
-import LoginPage from './pages/LoginPage';
-import reportWebVitals from './reportWebVitals';
-import './i18n';
-import LanguageSelector from './components/LanguageSelector';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import "./bootstrap-override.scss";
+import App from "./container/App";
+import reportWebVitals from "./reportWebVitals";
+import "./i18n";
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <React.StrictMode>
-    <UserSignupPage />
-    <LanguageSelector />
-  </React.StrictMode>
+  <div>
+    <App />
+  </div>
 );
 
 // If you want to start measuring performance in your app, pass a function
